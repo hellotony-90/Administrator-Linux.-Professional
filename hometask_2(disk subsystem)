@@ -1,0 +1,50 @@
+Добавить в виртуальную машину несколько дисков
+
+0.	Добавляем в VirtualBox 5 дисков размер 1Gb
+1.	Получаем права суперпользователя 
+hello@hello:~$sudo -i
+2.	Уточнение версии дистрибутива и кодовой версии
+root@hello:~#lsb_release -a
+3.	Проверяем блочных устройств
+root@hello:~#lsblk -l
+4.	Зануляем суперблоки
+root@hello:~#mdadm --zero-superblock --force /dev/sd[b-f]
+    
+Собираем RAID5
+    
+1.	Собираем RAID5 на 4 дисках
+root@hello:~#mdadm --create --verbose /dev/md0 -l 5 -n 4 /dev/sd[b-e] 
+2.	Проверяем наш RAID
+root@hello:~#cat /proc/mdstat
+root@hello:~#mdadm -D /dev/md0
+    
+Хулиганим с RAID
+    
+1.	Жертвой выбираем /dev/sdd. Ломаем его
+root@hello:~#mdadm /dev/md0 --fail /dev/sdd
+2.	Проверяем
+root@hello:~#cat /proc/mdstat
+root@hello:~#mdadm -D /dev/md0
+3.	Удаляем сбойный диск, затем.
+root@hello:~#mdadm /dev/md0 --remove /dev/sdd
+4.	Добавляем новый диск
+root@hello:~#mdadm /dev/md0 --add /dev/sdf
+5.	Проверяем состояние ребилда.
+root@hello:~#cat /proc/mdstat
+ 
+Создаем таблицу разделов GPT на 5 партиций, и монтируем их на диск
+    
+1.	Создаем GPT
+root@hello:~#parted -s /dev/md0 mklabel gpt
+2.	Создаем партиции
+root@hello:~# parted /dev/md0 mkpart primary ext4 0% 20%
+root@hello:~# parted /dev/md0 mkpart primary ext4 20% 40%             
+root@hello:~# parted /dev/md0 mkpart primary ext4 40% 60%        
+root@hello:~# parted /dev/md0 mkpart primary ext4 60% 80%        
+root@hello:~# parted /dev/md0 mkpart primary ext4 80% 100%       
+3.	Создаем файловую систему и монтируем их по каталогам
+root@hello:~# for i in $(seq 1 5); do sudo mkfs.ext4 /dev/md0p$i; done 
+root@hello:~# mkdir -p /raid/part{1,2,3,4,5} 
+root@hello:~#  for i in $(seq 1 5); do mount /dev/md0p$i /raid/part$i; done
+4.	Проверяем результат
+root@hello:~# fdisk -lыв
