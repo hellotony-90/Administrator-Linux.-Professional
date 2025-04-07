@@ -32,3 +32,35 @@ root@hello:~# mount -o remount,rw /
 После чего создадим файл, для проверки прав на запись 
 
 ![4](screen/5.PNG)
+
+## Способ 2. Recovery mode
+В меню загрузчика на первом уровне выбрать второй пункт (Advanced options…)
+![5](screen/6.PNG)
+![6](screen/7.PNG)
+
+Включаем поддержку сети (network)
+
+Выбираем пункт root и попадаем в консоль с пользователем root. 
+
+Производим любые манипуляции с системой.
+
+# Переименовываем VG
+
+Смотрим текущее состояние системы (список Volume Group)
+
+root@hello:~# vgs
+
+Переименовываем
+
+root@hello:~# vgrename ubuntu-vg ubuntu-hello
+
+![7](screen/9.PNG)
+
+Правим /boot/grub/grub.cfg
+
+С помощью сочетания клавиш Alt+R вы можете использовать поиск и замену: ubuntu--vg на ubuntu--hello
+
+Перезагружаемся и проверяем 
+root@hello:~# vgs
+
+![8](screen/10.PNG)
