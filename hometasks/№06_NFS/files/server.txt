@@ -1,26 +1,26 @@
-hello@hello:~$ sudo -i
-[sudo] password for hello:
+# Установим сервер NFS
 root@hello:~#  apt install nfs-kernel-server
+
+# Создаём и настраиваем директорию
 root@helloubuntu:~# cd /etc/
 root@helloubuntu:/etc# mkdir -p /srv/share/upload
-root@helloubuntu:/etc# ls
-Display all 205 possibilities? (y or n)
-root@helloubuntu:/etc# ls /s
-sbin/               snap/               swap.img
-sbin.usr-is-merged/ srv/                sys/
-root@helloubuntu:/etc# ls /s
-sbin/               snap/               swap.img
-sbin.usr-is-merged/ srv/                sys/
 root@helloubuntu:/etc# chown -R nobody:nogroup /srv/share
 root@helloubuntu:/etc# chmod 0777 /srv/share/upload
+
+# Cоздаём в файле /etc/exports структуру, которая позволит экспортировать ранее созданную директорию:
 root@helloubuntu:/etc# cat << EOF > /etc/exports
 /srv/share 192.168.1.8/32(rw,sync,root_squash)
 EOF
+
+# Экспортируем ранее созданную директорию:
 root@helloubuntu:/etc# exportfs -r
 exportfs: /etc/exports [1]: Neither 'subtree_check' or 'no_subtree_check' specified for export "192.168.1.8/32:/srv/share".
   Assuming default behaviour ('no_subtree_check').
   NOTE: this default has changed since nfs-utils version 1.0.x
 
+# Проверяем экспортированную директорию
 root@helloubuntu:/etc# exportfs -s
 /srv/share  192.168.1.8/32(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)
+
+# Перезапускаю службу
 root@helloubuntu:/etc# systemctl restart nfs-server.service
