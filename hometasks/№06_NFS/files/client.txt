@@ -1,6 +1,11 @@
-hello@hello:~$ sudo -i
-[sudo] password for hello:
+#Установим пакет с NFS-клиентом
 root@hello:~# apt install nfs-common
+
+# Добавляем в /etc/fstab строку 
 root@hello:~# echo "192.168.1.15:/srv/share/ /mnt nfs vers=3,noauto,x-systemd.automount 0 0" >> /etc/fstab
+
+# Перезагружаем и перечитываем все конфигурационные файлы юнитов
 root@hello:~# systemctl daemon-reload
+
+# Рестартуем службу
 root@hello:~# systemctl restart remote-fs.target
