@@ -12,7 +12,7 @@ Codename:       noble
  - lighttpd
  - GPG
  - dpkg-dev
-### [Скрипт](/usr/bin/update-repo.sh) для генерации/обновления репозитория
+### [Скрипт](files/update-repo.sh) для генерации/обновления репозитория
 
 ## Установка пакета dpkg-dev:
 ```
