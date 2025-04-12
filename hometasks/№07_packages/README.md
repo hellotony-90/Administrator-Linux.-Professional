@@ -12,9 +12,7 @@ Codename:       noble
  - lighttpd
  - GPG
  - dpkg-dev
- - rng-tools
-
-### Repo generation script: /usr/bin/update-repo.sh
+### [Скрипт](/usr/bin/update-repo.sh) для генерации/обновления репозитория
 
 ## Установка пакета dpkg-dev:
 ```
@@ -77,18 +75,16 @@ gpg: revocation certificate stored as '/root/.gnupg/openpgp-revocs.d/B5573C41438
 ```
 root@helloubuntu:~# gpg --export -a B5573C41438B44940861A54FDB49F83CB008892D > /var/www/html/repo/hellotony.gpg
 ```
-
-
-Запуск скрипта update-repo
-run the creation script /usr/bin/update-repo.sh
-
-
+## Запуск нашего скрипта
+```
+root@helloubuntu:~# /usr/bin/update-repo.sh
+```
 ## Проверка 
-### Проверка CURL'ом
+### CURL'ом
 ```
 root@helloubuntu:/var/www/html/repo/deb-packages# curl localhost/repo/deb-packages/
 # Выведет много строк HTML(вставлять не стал, что бы не мусорить)
 ```
-### Проверка через браузер
+### Через браузер
 ![1](files/1.PNG)
 
