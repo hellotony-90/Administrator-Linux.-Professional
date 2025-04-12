@@ -90,5 +90,5 @@ root@helloubuntu:/var/www/html/repo/deb-packages# curl localhost/repo/deb-packag
 # Выведет много строк HTML(вставлять не стал, что бы не мусорить)
 ```
 ### Проверка через браузер
-
+![1](files/1.PNG)
 
