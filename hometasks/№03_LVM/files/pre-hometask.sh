@@ -9,23 +9,16 @@ root@hello:~# lvmdiskscan
   1 partition
   0 LVM physical volume whole disks
   1 LVM physical volume
-
-Для начала разметим диск для будущего использования LVM - создадим PV:
-
+#Для начала разметим диск для будущего использования LVM - создадим PV:
 root@hello:~# pvcreate /dev/sdb
   Physical volume "/dev/sdb" successfully created.
-
-Затем можно создавать первый уровень абстракции - VG:
+#Затем можно создавать первый уровень абстракции - VG:
 root@hello:~# vgcreate otus /dev/sdb
   Volume group "otus" successfully created
- 
-И в итоге создать Logical Volume (далее - LV):
- 
-root@hello:~# lvcreate -l+80%FREE -n test otus
+ #И в итоге создать Logical Volume (далее - LV):
+ root@hello:~# lvcreate -l+80%FREE -n test otus
   Logical volume "test" created.
-
-Посмотреть информацию о только что созданном Volume Group:
-
+#Посмотреть информацию о только что созданном Volume Group:
 root@hello:~# vgdisplay otus
   --- Volume group ---
   VG Name               otus
@@ -47,65 +40,45 @@ root@hello:~# vgdisplay otus
   Alloc PE / Size       2047 / <8.00 GiB
   Free  PE / Size       512 / 2.00 GiB
   VG UUID               6WDtMN-vaLj-wzAT-ljAv-Hzjl-mpWP-RANCG6
-
-
-посмотреть информацию о том, какие диски входит в VG:
-
+#посмотреть информацию о том, какие диски входит в VG:
 root@hello:~# vgdisplay -v otus | grep 'PV Name'
   PV Name               /dev/sdb
-
-Для начала так же необходимо создать PV:
-
+#Для начала так же необходимо создать PV:
 root@hello:~# pvcreate /dev/sdc
   Physical volume "/dev/sdc" successfully created.
-  
-  Далее необходимо расширить VG добавив в него этот диск.
-
+#Далее необходимо расширить VG добавив в него этот диск.
 root@hello:~# vgextend otus /dev/sdc
   Volume group "otus" successfully extended
-Убедимся что новый диск присутствует в новой VG:
-
+#Убедимся что новый диск присутствует в новой VG:
 root@hello:~# vgdisplay -v otus | grep 'PV Name'
   PV Name               /dev/sdb
   PV Name               /dev/sdc
-
-личиваем LV за счет появившегося свободного места. Возьмем не все место — это для того, чтобы осталось место для демонстрации снапшотов:
-
-
+#Увеличиваем LV за счет появившегося свободного места. Возьмем не все место — это для того, чтобы осталось место для демонстрации снапшотов:
 root@hello:~# lvextend -l+80%FREE /dev/otus/test
   Size of logical volume otus/test changed from <8.00 GiB (2047 extents) to <11.20 GiB (2866 extents).
   Logical volume otus/test successfully resized.
-
-аблюдаем, что LV расширен до 11.12g:
-
+#Наблюдаем, что LV расширен до 11.12g:
 lvs /dev/otus/test
   LV   VG   Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
   test otus -wi-a----- <11.20g             
-  
-  root@hello:~# mkfs.ext4 /dev/otus/test
+root@hello:~# mkfs.ext4 /dev/otus/test
 mke2fs 1.47.0 (5-Feb-2023)
 Creating filesystem with 2934784 4k blocks and 734400 inodes
 Filesystem UUID: be3a2c2c-8f9a-4939-98f4-e0fe84ffe122
 Superblock backups stored on blocks:
         32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208
-
 Allocating group tables: done
 Writing inode tables: done
 Creating journal (16384 blocks):
 done
 Writing superblocks and filesystem accounting information: done
 
-root@hello:~#
 root@hello:~#  mkdir /data
 root@hello:~# mount /dev/otus/test /data/
 root@hello:~# mount | grep /data
 /dev/mapper/otus-test on /data type ext4 (rw,relatime)
-
-Допустим Вы забыли оставить место на снапшоты. Можно уменьшить существующий LV с помощью команды lvreduce, но перед этим необходимо отмонтировать файловую систему, проверить её на ошибки и уменьшить ее размер:
-
+#Допустим Вы забыли оставить место на снапшоты. Можно уменьшить существующий LV с помощью команды lvreduce, но перед этим необходимо отмонтировать файловую систему, проверить её на ошибки и уменьшить ее размер:
 root@hello:~# umount /data/
-
-
 root@hello:~# e2fsck -fy /dev/otus/test
 e2fsck 1.47.0 (5-Feb-2023)
 Pass 1: Checking inodes, blocks, and sizes
@@ -115,12 +88,10 @@ Pass 4: Checking reference counts
 Pass 5: Checking group summary information
 /dev/otus/test: 11/734400 files (0.0% non-contiguous), 72740/2934784 blocks
 
-
 root@hello:~# resize2fs /dev/otus/test 10G
 resize2fs 1.47.0 (5-Feb-2023)
 Resizing the filesystem on /dev/otus/test to 2621440 (4k) blocks.
 The filesystem on /dev/otus/test is now 2621440 (4k) blocks long.
-
 
 oot@hello:~# lvreduce /dev/otus/test -L 10G
   WARNING: Reducing active logical volume to 10.00 GiB.
@@ -128,10 +99,7 @@ oot@hello:~# lvreduce /dev/otus/test -L 10G
 Do you really want to reduce otus/test? [y/n]: Y
   Size of logical volume otus/test changed from <11.20 GiB (2866 extents) to 10.00 GiB (2560 extents).
   Logical volume otus/test successfully resized.
-
-Убедимся, что ФС и lvm необходимого размера:
-
-
+#Убедимся, что ФС и lvm необходимого размера:
 
 root@hello:~# df -Th /data/
 Filesystem                        Type  Size  Used Avail Use% Mounted on
@@ -141,22 +109,17 @@ root@hello:~# lvs /dev/otus/test
   LV   VG   Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
   test otus -wi-a----- 10.00g
 
-
-Работа со снапшотами
-Снапшот создается командой lvcreate, только с флагом -s, который указывает на то, что это снимок:
+#Работа со снапшотами
+#Снапшот создается командой lvcreate, только с флагом -s, который указывает на то, что это снимок:
 root@hello:~# lvcreate -L 500M -s -n test-snap /dev/otus/test
   Logical volume "test-snap" created.
-
-
-Провера с помощью VGS
+#Провера с помощью VGS
 
 root@hello:~# vgs -o +lv_size,lv_name | grep test
   otus        2   2   1 wz--n- 11.99g 1.50g  10.00g test
   otus        2   2   1 wz--n- 11.99g 1.50g 500.00m test-snap
 
-
-Снапшот можно смонтировать как и любой другой LV:
-
+#Снапшот можно смонтировать как и любой другой LV:
 
 root@hello:~# mkdir /data-snap
 root@hello:~# mount /dev/otus/test-snap /data-snap/
