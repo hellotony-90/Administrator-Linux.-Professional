@@ -193,6 +193,7 @@ root@hello:~# lvcreate -L 100MB -s -n home_snap  /dev/ubuntu-vg/LogVol_Home
   Logical volume "home_snap" created.
 ```
 ### Удаляем часть файлов 
+```
 root@hello:~# rm -f /home/file{11..20}
 root@hello:~# ls /home/
 file1   file2  file4  file6  file8  hello
@@ -235,6 +236,7 @@ drwxr-xr-x 23 root  root   4096 Mar 14 17:38 ..
 -rw-r--r--  1 root  root      0 Apr 20 17:55 file9
 drwxr-x---  4 hello hello  4096 Apr 20 17:32 hello
 drwx------  2 root  root  16384 Apr 20 17:55 lost+found
+```
 ```  
 
 
