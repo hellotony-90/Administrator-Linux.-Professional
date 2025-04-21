@@ -237,7 +237,6 @@ drwxr-xr-x 23 root  root   4096 Mar 14 17:38 ..
 drwxr-x---  4 hello hello  4096 Apr 20 17:32 hello
 drwx------  2 root  root  16384 Apr 20 17:55 lost+found
 ```
-```  
 
 
  
