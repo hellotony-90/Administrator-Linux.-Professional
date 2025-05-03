@@ -7,11 +7,9 @@ root@hellovm:~# nano script.sh
 ```
 ```
 #!/bin/bash
-
 # эта переменная нужна для расчета времени ЦПУ
-# подсмотрено на просторах интеренета https://stackoverflow.com/questions/16726779/how-do-i-get-the-total-cpu-usage-of-an-application-from-proc-pid-stat
+# подсмотрено на https://stackoverflow.com/questions/16726779/how-do-i-get-the-total-cpu-usage-of-an-application-from-proc-pid-stat
 clk=$(getconf CLK_TCK)
-
 # Заголовок для вывода
 echo "PID|TTY|STAT|TIME|COMMAND" | column -t -s "|";
 # пишем нашу функцию
