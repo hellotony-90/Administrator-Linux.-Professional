@@ -1,8 +1,10 @@
 # Написать свою реализацию ps ax используя анализ /proc
 ## Пишем скрипт 
+```
 hello@hellovm:~$ sudo -i
 root@hellovm:~# touch script.sh
 root@hellovm:~# nano script.sh 
+```
 ```
 #!/bin/bash
 
@@ -41,9 +43,13 @@ done
 psax | column -t -s "|"
 ```
 ## Предоставляем права на чтение, запись и выполнение файла.  
+```
 root@hellovm:~# chmod 777 script.sh 
+```
 ## Запускаем скрипт
+```
 root@hellovm:~# bash script.sh 
+```
 ## Смотрим результат
 ![1](screen/process.png)
 ##
