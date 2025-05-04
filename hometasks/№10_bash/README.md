@@ -1,7 +1,7 @@
 # Написать скрипт на языке Bash
 По заданию заменил cron на systemd timer.
 ##### Дальнейшие действия выполняются от пользователя root. Переходим в root пользователя: sudo -i
-## Шаг 1 Установка mailutils( выборал вариант local mailbox)
+## Шаг 1 Установка mailutils (выбрал вариант local mailbox)
 ```
 root@hellovm:~# apt install mailutils
 ```
@@ -85,5 +85,5 @@ ExecStart=/bin/bash /var/log/monitor.sh
 [Install]
  WantedBy=multi-user.target
 ```
-## Шаг 4 Проверка срабатывания ()
+## Шаг 4 Проверка срабатывания (в папке attach в файле mail_report.txt полный вывод)
 ![1](attach/mail.png)
