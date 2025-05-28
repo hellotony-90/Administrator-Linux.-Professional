@@ -46,7 +46,7 @@ root@helloubuntu:~# chown -R prometheus:prometheus /etc/prometheus/console_libra
 ```
 ## Создаем файл конфигурации
 ```
-nano /etc/prometheus/prometheus.yml
+root@helloubuntu:~#nano /etc/prometheus/prometheus.yml
 global:
  scrape_interval: 10s
 scrape_configs:
@@ -63,7 +63,7 @@ scrape_configs:
 ```
 ## Настраиваем сервис
 ```
-nano /etc/systemd/system/prometheus.service
+root@helloubuntu:~#nano /etc/systemd/system/prometheus.service
 [Unit]
 Description=Prometheus
 Wants=network-online.target
@@ -81,13 +81,43 @@ ExecStart=/usr/local/bin/prometheus \
 WantedBy=multi-user.target
 ```
 ```
-$ systemctl daemon-reload
-$ systemctl start prometheus
-$ systemctl status prometheus
+root@helloubuntu:~# systemctl daemon-reload
+root@helloubuntu:~# systemctl start prometheus
+root@helloubuntu:~# systemctl status prometheus
 ```
 ## Установка grafana
 ```
-wget https://mirrors.huaweicloud.com/grafana/12.0.0/grafana-enterprise_12.0.0_amd64.deb
-$ systemctl daemon-reload
-$ systemctl start grafana-server
+root@helloubuntu:~#wget https://mirrors.huaweicloud.com/grafana/12.0.0/grafana-enterprise_12.0.0_amd64.deb
+root@helloubuntu:~# systemctl daemon-reload
+root@helloubuntu:~# systemctl start grafana-server
+```
+## Скачиваем и распаковываем Node Exporter
+```
+root@helloubuntu:~# wget https://github.com/prometheus/node_exporter/releases/download/v1.9.1/node_exporter-1.9.1.linux-amd64.tar.gz
+root@helloubuntu:~# tar xzfv node_exporter-1.5.0.linux-amd64.tar.gz
+```
+## Создаем пользователя, перемещаем бинарник в /usr/local/bin
+```
+root@helloubuntu:~# useradd -rs /bin/false nodeusr
+root@helloubuntu:~# mv node_exporter-1.5.0.linux-amd64/node_exporter /usr/local/bin/
+```
+## Создаем сервис
+```
+root@helloubuntu:~# nano /etc/systemd/system/node_exporter.service
+[Unit]
+Description=Node Exporter
+After=network.target
+[Service]
+User=nodeusr
+Group=nodeusr
+Type=simple
+ExecStart=/usr/local/bin/node_exporter
+[Install]
+WantedBy=multi-user.target
+```
+## Запускаем сервис
+```
+root@helloubuntu:~# systemctl daemon-reload
+root@helloubuntu:~# systemctl start node_exporter
+root@helloubuntu:~# systemctl enable node_exporter
 ```
