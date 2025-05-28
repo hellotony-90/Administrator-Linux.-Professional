@@ -1,7 +1,16 @@
-Cкачиваем Prometheus
+Сперва скриншоты и немного от себя
+![1](screen/1.PNG)
+![2](screen/2.PNG)
+![3](screen/3.PNG)
+![4](screen/4.PNG)
+![5](screen/5.PNG)
+
+#Cкачиваем Prometheus
+``
 hello@helloubuntu:~$ sudo -i
 root@helloubuntu:~# cd /home/hello/
 root@helloubuntu:/home/hello# wget https://github.com/prometheus/prometheus/releases/download/v3.4.0/prometheus-3.4.0.linux-amd64.tar.gz
+``
 # Создаем пользователя и нужные каталоги, настраиваем для них владельцев
 root@helloubuntu:~#  useradd --no-create-home --shell /bin/false prometheus
 root@helloubuntu:~#  mkdir /etc/prometheus
