@@ -1,9 +1,9 @@
 Сперва скриншоты и немного от себя
-![1](screen/1.PNG)
-![2](screen/2.PNG)
-![3](screen/3.PNG)
-![4](screen/4.PNG)
-![5](screen/5.PNG)
+![1](screen/1.png)
+![2](screen/2.png)
+![3](screen/3.png)
+![4](screen/4.png)
+![5](screen/5.png)
 
 #Cкачиваем Prometheus
 ``
