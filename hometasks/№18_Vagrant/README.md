@@ -1,5 +1,8 @@
-### Ссылка на vagrantfile
-### [Vagrantfile](files/Vagrantfile)
+## Предисловие 
+Vagrant установлен с yandexcloud, работа проводилась на win10 через PowerShell, образ centos8 взят с cloud.centos.org. При выполнении домашено задания не хотелось использовать vpn.
+
+
+### Ссылка на [Vagrantfile](files/Vagrantfile)
 ```
 D:\vagrant> vagrant up
 ```
