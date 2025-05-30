@@ -45,5 +45,5 @@ docker login
 docker tag ngi hellotony90/ngi:latest
 docker push hellotony90/ngi:latest
 ```
-# Ссылка на докер hub
+# Ссылка на докерhub
 ### [hellotony90/ngi](https://hub.docker.com/repository/docker/hellotony90/ngi)
