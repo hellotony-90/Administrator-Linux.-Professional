@@ -33,7 +33,7 @@ sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 ```
 sudo grub2-set-default 0
 ```
-### После перезагрузки проверяем версию ядра:
+## После перезагрузки проверяем версию ядра:
 ```
 [vagrant@localhost ~]$ uname -r
 6.14.9-1.el8.elrepo.x86_64
