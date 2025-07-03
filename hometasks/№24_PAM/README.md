@@ -30,20 +30,20 @@ chmod +x /usr/local/bin/weekend_login.sh
 ```
 root@hellopam:~# nano /etc/pam.d/sshd
 ```
-### Добавляем строчку для использования нашего скрипта()
+### Добавляем строчку для использования нашего скрипта
 ```
 auth required pam_exec.so /usr/local/bin/weekend_login.sh
 ```
 ![1](screen/1.png)
 ## Проверяем работу
-### Создаем пользователей и устанавляиваем пароль
+### Создаем пользователей и устанавливаем пароль
 ```
 root@hellopam:~# useradd -m -s /bin/bash user1
 root@hellopam:~# passwd user1
 root@hellopam:~# useradd -m -s /bin/bash user2
 root@hellopam:~# passwd user2
 ```
-### Создаем групу admin, пользователя user1 добавляем в эту групу
+### Создаем группу admin, пользователя user1 добавляем в эту группу
 ```
 root@hellopam:~# groupadd admin
 root@hellopam:~# usermod -a -G admin user1
