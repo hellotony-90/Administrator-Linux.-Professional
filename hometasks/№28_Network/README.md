@@ -1,1 +1,1 @@
-![1](screen/network_otus.png)
+![1](screen/Network_OTUS.png)
