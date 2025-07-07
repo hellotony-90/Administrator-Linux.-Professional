@@ -118,9 +118,73 @@ Hosts/Net: 62                    Class C, Private Internet
 ```
 #### Ошибок при разбиении нет.
 ## Практическая часть
-### Соединить офисы в сеть согласно схеме и настроить роутинг
-### Все сервера и роутеры должны ходить в инет черз inetRouter
-### Все сервера должны видеть друг друга
+### Настройка сетевых интерфейсов
+Настройка сетевых интерфейсов производится согласно заданию через службу netplan
+```
+root@centraloffice:~# nano /etc/netplan/50-cloud-init.yaml
+network:
+  ethernets:
+    enp0s8:
+      dhcp4: no
+      addresses:
+        - 192.168.255.2/30
+      routes:
+        - to: default
+          via: 192.168.255.1
+    enp0s3:
+        dhcp4: no
+        addresses:
+          - 192.168.255.9/30
+        routes:
+        - to: 192.168.1.128/26
+          via: 192.168.255.10
+root@centraloffice:~# netplan try
+```
+### Настройка маршрутизации транзитных пакетов
+```
+root@centraloffice:~# echo "net.ipv4.conf.all.forwarding = 1" >> /etc/sysctl.conf
+root@centraloffice:~# sysctl -p
+net.ipv4.conf.all.forwarding = 1
+```
+### Настройка NAT
+```
+# Проверка состояние файервола
+root@inetrouter:~# systemctl status ufw
+● ufw.service - Uncomplicated firewall
+     Loaded: loaded (/usr/lib/systemd/system/ufw.service; enabled; preset: enab>
+     Active: active (exited) since Mon 2025-07-07 12:55:36 UTC; 7min ago
+       Docs: man:ufw(8)
+   Main PID: 518 (code=exited, status=0/SUCCESS)
+        CPU: 1ms
+Jul 07 12:55:36 centraloffice systemd[1]: Starting ufw.service - Uncomplicated >
+Jul 07 12:55:36 centraloffice systemd[1]: Finished ufw.service - Uncomplicated >
+# Нужно отключить и удалить из автозагрузки:
+root@inetrouter:~# systemctl stop ufw
+root@inetrouter:~# systemctl disable ufw
+# Создаём файл
+root@inetrouter:~# nano /etc/iptables_rules.ipv4:
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+-A POSTROUTING ! -d 192.168.0.0/16 -o enp0s3 -j MASQUERADE
+COMMIT
+# Cоздаём файл, в который добавим скрипт автоматического восстановления правил при перезапуске системы:
+root@inetrouter:~# nano /etc/network/if-pre-up.d/iptables
+#!/bin/sh
+/sbin/iptables-restore < /etc/iptables_rules.ipv4
+# Добавляем права на выполнение файла
+root@inetrouter:~# chmod +x /etc/network/if-pre-up.d/iptables
+# После перезагрузки сервера проверяем правила iptables
+root@centraloffice:~# iptables-save
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [1:72]
+-A POSTROUTING ! -d 192.168.0.0/16 -o enp0s3 -j MASQUERADE
+COMMIT
+```
 ## Проверка
 ![2](screen/inet.png)
 ![3](screen/central.png)
