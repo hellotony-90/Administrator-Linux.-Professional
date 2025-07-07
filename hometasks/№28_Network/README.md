@@ -148,7 +148,7 @@ net.ipv4.conf.all.forwarding = 1
 ```
 ### Настройка NAT
 ```
-# Проверка состояние файервола
+# Проверка состояния файервола
 root@inetrouter:~# systemctl status ufw
 ● ufw.service - Uncomplicated firewall
      Loaded: loaded (/usr/lib/systemd/system/ufw.service; enabled; preset: enab>
@@ -186,7 +186,5 @@ root@centraloffice:~# iptables-save
 COMMIT
 ```
 ## Проверка
-![2](screen/inet.png)
-![3](screen/central.png)
-![4](screen/office1.png)
-![5](screen/server.png)
+Проверка доступности(пинг и телнет 443го порта) 
+![2](screen/server.png)
