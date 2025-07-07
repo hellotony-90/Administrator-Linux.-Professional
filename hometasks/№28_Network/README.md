@@ -121,3 +121,8 @@ Hosts/Net: 62                    Class C, Private Internet
 ### Соединить офисы в сеть согласно схеме и настроить роутинг
 ### Все сервера и роутеры должны ходить в инет черз inetRouter
 ### Все сервера должны видеть друг друга
+## Проверка
+![2](screen/inet.png)
+![3](screen/central.png)
+![4](screen/office1.png)
+![5](screen/server.png)
