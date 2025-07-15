@@ -2,8 +2,8 @@
 ## Схема нашей сети
 ![1](screen/ospf1.png)
 ## Выполнение задания
-1. Поднимаем ВМ с необходимым количеством интерфейсов согласно схеме сети.
-2. Устанавливаем необходимые пакеты(на примере одного из роутеров)
+### 1. Поднимаем ВМ с необходимым количеством интерфейсов согласно схеме сети.
+### 2. Устанавливаем необходимые пакеты(на примере одного из роутеров)
 ```
 root@centraloffice:~# apt update
 root@centraloffice:~# apt install vim traceroute tcpdump net-tools
@@ -14,22 +14,23 @@ root@centraloffice:~# nano /etc/frr/daemons
 bgpd=yes
 ospfd=yes
 #
-3. Создаём файл /etc/frr/frr.conf 
+```
+### 3. Создаём файл /etc/frr/frr.conf 
 ```
 root@centraloffice:~# nano /etc/frr/frr.conf
 # Вносим в него параметры интерфейсов(т.к. я сетевой инженер по профессии я внес только часть остально затолкал через vtysh)
 ```
-4. Устанавливаем права
+### 4. Устанавливаем права
 ```
 root@centraloffice:~# chown frr:frr /etc/frr/frr.conf 
 root@centraloffice:~# chmod 640 /etc/frr/frr.conf 
 ```
-5. Перезапускаем службу и добавляем в атозагрузку
+### 5. Перезапускаем службу и добавляем в атозагрузку
 ```
 root@centraloffice:~# systemct restart frr 
 root@centraloffice:~# systemctl enable frr
 ```
-6. Считаем что установили все пакеты на наши роутеры, приведу листиг роутера настроенного через vtysh. Добавил passive-ospf default, что бы hello не летали со всех интерфейсов(В данной лабе не критично)
+### 6. Считаем что установили все пакеты на наши роутеры, приведу листиг роутера настроенного через vtysh. Добавил passive-ospf default, что бы hello не летали со всех интерфейсов(В данной лабе не критично)
 ```
 router-3# sh run
 Building configuration...
@@ -95,7 +96,7 @@ K>* 192.168.1.1/32 [0/100] is directly connected, enp0s9, 00:43:03
 O>* 192.168.10.0/24 [110/200] via 10.10.12.1, enp0s8, weight 1, 00:20:02
 O>* 192.168.20.0/24 [110/200] via 10.10.11.1, enp0s3, weight 1, 00:01:57
 ```
-Поменяем Cost на интерфейсе и посмотрим таблицу маршрутизации
+### 7. Поменяем Cost на интерфейсе и посмотрим таблицу маршрутизации
 ```
 router-3(config)# interface enp0s3
 router-3(config-if)# ip ospf cost 1000
@@ -103,7 +104,7 @@ router-3(config-if)# do sh ip route
 # Уменьшил вывод
 O>* 192.168.20.0/24 [110/300] via 10.10.12.1, enp0s8, weight 1, 00:00:03
 ```
-Видим что маршрутизация изменилась
+### 8. Видим что маршрутизация изменилась
 ```
 # Добавляем маршрутизацию транзитных пакетов:
 root@centraloffice:~# sysctl net.ipv4.conf.all.forwarding=1
@@ -111,7 +112,7 @@ root@centraloffice:~# sysctl net.ipv4.conf.all.forwarding=1
 root@centraloffice:~# sysctl net.ipv4.conf.all.rp_filter=0
 net.ipv4.conf.all.rp_filter = 0
 ```
-Исправляем ситуацию с ассинхронной маршрутизацией добавляем cost на интерфейс
+### 9. Исправляем ситуацию с ассинхронной маршрутизацией добавляем cost на интерфейс
 ```
 router-2(config)# interface enp0s10
 router-2(config)# ip address 10.10.11.1/30
