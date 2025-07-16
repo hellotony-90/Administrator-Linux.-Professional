@@ -1,4 +1,4 @@
-#Установка сервера Borg Backup
+# Borg Backup
 ## Установка и использование клиента Borg Backup (выполняем и на клиенте и на сервере)
 ```
 root@helloubuntu:~# apt update
@@ -15,7 +15,7 @@ root@hello:~# mkdir ~borg/.ssh
 root@hello:~# touch ~borg/.ssh/authorized_keys
 root@hello:~# chown -R borg:borg ~borg/.ssh
 ```
-Создадим SSH-ключ на клиенте, от установки парольной фразы для закрытого ключа отказываемся:
+## Создадим SSH-ключ на клиенте, от установки парольной фразы для закрытого ключа отказываемся:
 ```
 root@helloubuntu:~# ssh-keygen
 Generating public/private ed25519 key pair.
@@ -53,7 +53,7 @@ echo 'command="/usr/bin/borg serve" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINKltGEf
 ```
 root@helloubuntu:~# borg init -e none borg@192.168.1.12:backup
 ```
-## Сделаем тестовый бекап  и проверим наличие backup
+## Сделаем тестовый бекап и проверим его наличие
 ```
 root@helloubuntu:~# borg create -C zstd borg@192.168.1.12:backup::logs-`date +%Y%m%d_%H%M%S` /var/log/auth.log --list
 A /var/log/auth.log
@@ -66,7 +66,7 @@ A /var/log/auth.log
 root@helloubuntu:~# touch /etc/systemd/system/borg-backup.service
 root@helloubuntu:~# touch /etc/systemd/system/borg-backup.timer
 ```
-Откроем файлы редактором и внесем содержимое 
+## Откроем файлы редактором и внесем содержимое 
 ```
 root@helloubuntu:~# nano /etc/systemd/system/borg-backup.service
   GNU nano 7.2                                                        /etc/systemd/system/borg-backup.service
