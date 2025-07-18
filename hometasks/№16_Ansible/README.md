@@ -65,6 +65,22 @@ root@ansibleserver:~/ansible-inventory/templates# cat /root/ansible-playbooks/ng
         name: nginx
         state: restarted
 ```
+## Создание файла jinja2
+```
+root@ansibleserver:~/ansible-inventory/templates# nano /root/ansible-playbooks/nginx.conf.j2
+events {
+}
+http {
+server {
+    listen 8080;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+    }
+}
+}
+```
 ## Проверка web-сервера
 ```
 root@nginx:~# ss -tunl | grep 8080
