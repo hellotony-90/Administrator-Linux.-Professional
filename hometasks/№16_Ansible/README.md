@@ -1,6 +1,6 @@
 # Ansible
 ## Схема стенда(простенькая, но протоколировать надо)
-![1](screen/1.PNG)
+![1](screen/1.png)
 ## Подготовка Ansible сервера
 ```
 root@ansibleserver:~# apt update
@@ -86,4 +86,4 @@ server {
 root@nginx:~# ss -tunl | grep 8080
 tcp   LISTEN 0      511                0.0.0.0:8080      0.0.0.0:*
 ```
-![2](screen/2.PNG)
+![2](screen/2.png)
