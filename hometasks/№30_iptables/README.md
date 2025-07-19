@@ -111,3 +111,7 @@ PING 77.88.8.8 (77.88.8.8) 56(84) bytes of data.
 64 bytes from 77.88.8.8: icmp_seq=2 ttl=55 time=72.7 ms 
 64 bytes from 77.88.8.8: icmp_seq=3 ttl=56 time=41.2 ms
 ```
+## Чтобы работало без маскарадинга надо сделать обратную подмену, через цепочку POSTROUTING и SNAT
+
+
+```
