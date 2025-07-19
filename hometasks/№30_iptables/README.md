@@ -101,7 +101,7 @@ default via 192.168.1.1 dev enp0s3 proto dhcp src 192.168.1.22 metric 100
 192.168.1.9 via 20.20.20.1 dev enp0s8 metric 1
 ```
 ### Проверяю со своей машины(можно было забрать curl'ом с другой машины, но решил вставить картнку)
-![2](screen/nginx.png)
+![2](screen/2.png)
 ```
 root@centralserver:~# ping 77.88.8.8
 PING 77.88.8.8 (77.88.8.8) 56(84) bytes of data.
