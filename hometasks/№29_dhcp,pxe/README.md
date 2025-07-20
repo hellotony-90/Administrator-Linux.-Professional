@@ -66,11 +66,11 @@ Require all granted
 </VirtualHost>
 
 ```
+## 7. активируем конфигурацию ks-server в apache
 ```
-a2ensite ks-server.conf
+root@pxeserver:/# a2ensite ks-server.conf
 ```
-
-## 7. Вносим изменения в файл /srv/tftp/amd64/pxelinux.cfg/default
+## 8. Вносим изменения в файл /srv/tftp/amd64/pxelinux.cfg/default
 ```
 root@pxeserver:/# nano /srv/tftp/amd64/pxelinux.cfg/default
 DEFAULT install
@@ -80,13 +80,13 @@ LABEL install
   APPEND root=/dev/ram0 ramdisk_size=3000000 ip=dhcp iso-url=http://10.0.0.1/srv/images/questing-live-server-amd64.iso autoinstall ds=nocloud-net;s=http://10.0.0.1/srv/ks/
 
 ```
-## 8. Перезагружаем web-сервер apache
+## 9. Перезагружаем web-сервер apache
 ```
-systemctl restart apache2
+root@pxeserver:/# systemctl restart apache2
 ```
-## 9. Автоматическая установка Ubuntu 
+## 10. Автоматическая установка Ubuntu 
 ```
-nano  /srv/ks/user-data
+root@pxeserver:/# nano  /srv/ks/user-data
 #cloud-config
 autoinstall:
 apt:
@@ -130,10 +130,14 @@ install-server: true
 updates: security
 version: 1
 ```
-## 10. 6) перезапускаем службы dnsmasq и apache2
+## 11. Cоздаём файл с метаданными
 ```
-systemctl restart dnsmasq
-systemctl restart apache2
+root@pxeserver:/# touch /srv/ks/meta-data
+```
+## 12. Перезапускаем службы dnsmasq и apache2
+```
+root@pxeserver:/# systemctl restart dnsmasq
+root@pxeserver:/# systemctl restart apache2
 ```
 # Проверка 
 ## Включение ВМ, начало установки 
