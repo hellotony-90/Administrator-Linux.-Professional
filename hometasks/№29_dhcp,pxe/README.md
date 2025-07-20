@@ -48,7 +48,7 @@ root@pxeserver:/# mkdir /srv/images && cd /srv/images
 root@pxeserver:/# wget https://cdimage.ubuntu.com/ubuntu-server/daily-live/current/questing-live-server-amd64.iso
 
 ```
-## 6. создаём файл /etc/apache2/sites-available/ks-server.conf и добавлем в него следующее содержимое
+## 6. Создаём файл /etc/apache2/sites-available/ks-server.conf и добавлем в него следующее содержимое
 ```
 root@pxeserver:/# nano /etc/apache2/sites-available/ks-server.conf
 <VirtualHost 10.0.0.1:80>
@@ -66,7 +66,7 @@ Require all granted
 </VirtualHost>
 
 ```
-## 7. активируем конфигурацию ks-server в apache
+## 7. Активируем конфигурацию ks-server в apache
 ```
 root@pxeserver:/# a2ensite ks-server.conf
 ```
