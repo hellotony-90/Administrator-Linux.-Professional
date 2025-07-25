@@ -68,16 +68,18 @@ root@vpn-server:/etc/openvpn/easy-rsa# ./easyrsa sign-req server server
 ```
 ### Генерируем файл параметров Диффи-Хеллмана
 ```
-./easyrsa gen-dh
+root@vpn-server:/etc/openvpn/easy-rsa# ./easyrsa gen-dh
 ```
 ### Создаем shared-key (безопасность не бывает лишней ☺)
-```openvpn --genkey secret /etc/openvpn/ta.key ```
+```
+root@vpn-server:/etc/openvpn/easy-rsa# openvpn --genkey secret /etc/openvpn/ta.key
+```
 ## Настраиваем сервер
 ### Копирую необходимые файлы в директорию OVPN
 ```
-cp pki/ca.crt pki/private/server.key pki/issued/server.crt /etc/openvpn/
-cp /etc/openvpn/easy-rsa/pki/dh.pem /etc/openvpn/
-cp /etc/openvpn/ta.key /etc/openvpn/
+root@vpn-server:/etc/openvpn/easy-rsa# cp pki/ca.crt pki/private/server.key pki/issued/server.crt /etc/openvpn/
+root@vpn-server:/etc/openvpn/easy-rsa# cp /etc/openvpn/easy-rsa/pki/dh.pem /etc/openvpn/
+root@vpn-server:/etc/openvpn/easy-rsa# cp /etc/openvpn/ta.key /etc/openvpn/
 ```
 ### Создаем конфигурационный файл
 ```
