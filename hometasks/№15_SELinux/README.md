@@ -62,7 +62,6 @@ type=AVC msg=audit(1753032326.308:138): avc:  denied  { name_bind } for  pid=223
                         body {
                                 background-color: #fff;
 ```
-![1](screen/Network_OTUS.png)
 ## Вернём запрет работы nginx на порту 4881 обратно
 ```
 [root@localhost ~]# getsebool -a | grep nis_enabled
