@@ -1,8 +1,9 @@
-
-проверить, что конфигурация nginx настроена без ошибок
+# 1 Часть
+## Проверить, что конфигурация nginx настроена без ошибок
+```
 [root@localhost ~]# nginx -t
-
-с помощью утилиты audit2why смотрим грепал по 4881 порту
+```
+## C помощью утилиты audit2why смотрим грепал по 4881 порту
 ```
 [root@localhost ~]# grep 4881 /var/log/audit/audit.log | audit2why
 type=AVC msg=audit(1753032326.308:138): avc:  denied  { name_bind } for  pid=2235 comm="nginx" src=4881 scontext=system_u:system_r:httpd_t:s0 tcontext=system_u:object_r:unreserved_port_t:s0 tclass=tcp_socket permissive=0
@@ -15,8 +16,7 @@ type=AVC msg=audit(1753032326.308:138): avc:  denied  { name_bind } for  pid=223
         Allow access by executing:
         # setsebool -P nis_enabled 1
 ```
-     
-Включим параметр nis_enabled и перезапустим nginx:
+## Включим параметр nis_enabled и перезапустим nginx:
 ```
 [root@localhost ~]# setsebool -P nis_enabled on
 [root@localhost ~]# systemctl restart nginx
@@ -47,8 +47,7 @@ type=AVC msg=audit(1753032326.308:138): avc:  denied  { name_bind } for  pid=223
 июл 20 20:31:31 localhost.localdomain nginx[2286]: nginx: configuration file /etc/nginx/nginx.conf test is successful
 июл 20 20:31:31 localhost.localdomain systemd[1]: Started The nginx HTTP and reverse proxy server.
 ```
-
-проверить работу nginx
+## Проверим работу nginx
 ```
 [root@localhost ~]# curl http://127.0.0.1:4881
 
@@ -64,13 +63,13 @@ type=AVC msg=audit(1753032326.308:138): avc:  denied  { name_bind } for  pid=223
                                 background-color: #fff;
 ```
 ![1](screen/Network_OTUS.png)
-Вернём запрет работы nginx на порту 4881 обратно
+## Вернём запрет работы nginx на порту 4881 обратно
 ```
 [root@localhost ~]# getsebool -a | grep nis_enabled
 nis_enabled --> on
 [root@localhost ~]# setsebool -P nis_enabled off
 ```
-разрешим в SELinux работу nginx на порту TCP 4881 c помощью добавления нестандартного порта в имеющийся тип:
+## Разрешим в SELinux работу nginx на порту TCP 4881 c помощью добавления нестандартного порта в имеющийся тип:
 ```
 [root@localhost ~]# semanage port -l | grep http
 http_cache_port_t              tcp      8080, 8118, 8123, 10001-10010
@@ -142,7 +141,7 @@ See "systemctl status nginx.service" and "journalctl -xeu nginx.service" for det
 июл 20 20:37:57 localhost.localdomain systemd[1]: nginx.service: Failed with result 'exit-code'.
 июл 20 20:37:57 localhost.localdomain systemd[1]: Failed to start The nginx HTTP and reverse proxy server.
 ```
-Разрешим в SELinux работу nginx на порту TCP 4881 c помощью формирования и установки модуля SELinux:
+## Разрешим в SELinux работу nginx на порту TCP 4881 c помощью формирования и установки модуля SELinux:
 ```
 [root@localhost ~]# grep nginx /var/log/audit/audit.log | audit2allow -M nginx
 ******************** ВАЖНО ***********************
@@ -182,5 +181,104 @@ semodule -i nginx.pp
 июл 20 20:38:58 localhost.localdomain nginx[2466]: nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 июл 20 20:38:58 localhost.localdomain nginx[2466]: nginx: configuration file /etc/nginx/nginx.conf test is successful
 июл 20 20:38:58 localhost.localdomain systemd[1]: Started The nginx HTTP and reverse proxy server.
+```
+# 2 Часть
+## Развернем стенд
+
+```
+git clone https://github.com/Nickmob/vagrant_selinux_dns_problems.git
+root@hello-VirtualBox:~/otus-linux-adm/selinux_dns_problems# vagrant up
+```
+### Комментарий к командам выше :) Тут была небольшая трудность, которая отняла досточно времени ) Пришлось заходить на ns01 и client добавлять старые репы, и делать provision еще раз. 
+```
+sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/CentOS*.repo
+sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/CentOS*.repo
+sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/CentOS*.repo
+```
+## Проверка виртуальных машин
+![1](screen/1.png)
+![1](screen/2.png)
+![1](screen/3.png)
+## Приступаем к выполнению задания 
+```
+[vagrant@client ~]$ nsupdate -k /etc/named.zonetransfer.key
+> server 192.168.50.10
+> zone ddns.lab
+> update add www.ddns.lab 60 A 192.168.50.15
+> send
+update failed: SERVFAIL
+```
+## Смотрим логи - на клиенте пусто
+```
+[vagrant@client ~]$ cat cat /var/log/audit/audit.log | audit2why
+```
+## На сервере видим результа
+```
+[root@ns01 ~]#  cat /var/log/audit/audit.log | audit2why
+type=AVC msg=audit(1753639682.344:2949): avc:  denied  { create } for  pid=7172 comm="isc-worker0000" name="named.ddns.lab.view1.jnl" scontext=system_u:system_r:named_t:s0 tcontext=system_u:object_r:etc_t:s0 tclass=file permissive=0
+
+        Was caused by:
+                Missing type enforcement (TE) allow rule.
+
+                You can use audit2allow to generate a loadable module to allow this access.
+
+                vagrant@client ~]$ exit
+logout
+```
+## Смотрим контекст безопасноси, основываясь на логах ошибки
+```
+[root@ns01 ~]# ls -alZ /var/named
+drwxrwx--T. root  named system_u:object_r:named_zone_t:s0 .
+drwxr-xr-x. root  root  system_u:object_r:var_t:s0       ..
+drwxrwx---. named named system_u:object_r:named_cache_t:s0 data
+drwxrwx---. named named system_u:object_r:named_cache_t:s0 dynamic
+-rw-r-----. root  named system_u:object_r:named_conf_t:s0 named.ca
+-rw-r-----. root  named system_u:object_r:named_zone_t:s0 named.empty
+-rw-r-----. root  named system_u:object_r:named_zone_t:s0 named.localhost
+-rw-r-----. root  named system_u:object_r:named_zone_t:s0 named.loopback
+drwxrwx---. named named system_u:object_r:named_cache_t:s0 slaves
+```
+
+## Изменим тип контекста безопасности для каталога /etc/named
+```
+[root@ns01 ~]# sudo chcon -R -t named_zone_t /etc/named
+```
+## Пробуем внети изменения в клиента
+```
+[vagrant@client ~]$ nsupdate -k /etc/named.zonetransfer.key
+> server 192.168.50.10
+> zone ddns.lab
+> update add www.ddns.lab 60 A 192.168.50.15
+> send
+> quit
+```
+## Проверяем результат
+```
+[vagrant@client ~]$ dig www.ddns.lab
+
+; <<>> DiG 9.11.4-P2-RedHat-9.11.4-26.P2.el7_9.16 <<>> www.ddns.lab
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 31984
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 2
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;www.ddns.lab.                  IN      A
+
+;; ANSWER SECTION:
+www.ddns.lab.           60      IN      A       192.168.50.15
+
+;; AUTHORITY SECTION:
+ddns.lab.               3600    IN      NS      ns01.dns.lab.
+
+;; ADDITIONAL SECTION:
+ns01.dns.lab.           3600    IN      A       192.168.50.10
+
+;; Query time: 1 msec
+;; SERVER: 192.168.50.10#53(192.168.50.10)
+;; WHEN: Sun Jul 27 18:19:30 UTC 2025
+;; MSG SIZE  rcvd: 96
 
 ```
