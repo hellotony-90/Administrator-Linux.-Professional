@@ -55,10 +55,10 @@ network:
       dhcp4: false
 
 root@MainR:~# nmcli con add type bond con-name bond0 ifname bond0 mode active-backup ip4 30.30.30.1/24
-root@MainR:~# nmcli con add type bond-slave ifname enp0s8 master bond0
 root@MainR:~# nmcli con add type bond-slave ifname enp0s9 master bond0
-root@MainR:~# nmcli connection up bond-slave-enp0s8
+root@MainR:~# nmcli con add type bond-slave ifname enp0s10 master bond0
 root@MainR:~# nmcli connection up bond-slave-enp0s9
+root@MainR:~# nmcli connection up bond-slave-enp0s10
 root@MainR:~# nmcli connection up bond0
 ```
 ### Настройка ispR
