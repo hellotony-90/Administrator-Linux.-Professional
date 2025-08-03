@@ -1,4 +1,5 @@
 Схема лабораторной работы 
+![1](screen/1.png)
 # Установка FreeIPA сервера
 ## Подготовка ВМ для работы
 ### Проверяем сетевые интефрейсы
@@ -111,7 +112,144 @@ c:\Windows\System32\Drivers\etc\hosts
 192.168.1.21 ipa.otus.lan
 ```
 ## Проверка 
-картинка 2
-картинка 3
+### Web-мордочка
+![2](screen/2.png)
 
-На этом установка и настройка FreeIPA-сервера завершена.
+### Наш админ
+![3](screen/3.png)
+
+## На этом установка и настройка FreeIPA-сервера завершена.
+# Ansible playbook для конфигурации клиента
+## Создаем инвентори
+```
+root@ipa ~]# nano /root/ansible-inventory/inv.inventory
+[webserver]
+server1 ansible_ssh_host=192.168.1.22 ansible_ssh_user=alma
+```
+## Создаем провижинг
+```
+[root@ipa ~]#  nano provision.yml
+- name: Base set up
+  hosts: webserver
+  #Выполнять действия от root-пользователя
+  become: yes
+  tasks:
+  #Установка текстового редактора Vim и chrony
+  - name: install softs on Alma
+    yum:
+      name:
+        - vim
+        - chrony
+      state: present
+      update_cache: true
+
+  #Отключение firewalld и удаление его из автозагрузки
+  - name: disable firewalld
+    service:
+      name: firewalld
+      state: stopped
+      enabled: false
+
+  #Отключение SElinux из автозагрузки
+  #Будет применено после перезагрузки
+#  - name: disable SElinux
+ #   selinux:
+  #    state: disabled
+
+  #Отключение SElinux до перезагрузки
+  - name: disable SElinux now
+    shell: setenforce 0
+
+  #Установка временной зоны Европа/Москва
+#  - name: Set up timezone
+ #   timezone:
+  #    name: "Europe/Moscow"
+
+  #Запуск службы Chrony, добавление её в автозагрузку
+  - name: enable chrony
+    service:
+      name: chronyd
+      state: restarted
+      enabled: true
+
+  #Копирование файла /etc/hosts c правами root:root 0644
+  - name: change /etc/hosts
+    template:
+      src: hosts.j2
+      dest: /etc/hosts
+      owner: root
+      group: root
+      mode: 0644
+
+  #Установка клиента Freeipa
+  - name: install module ipa-client
+    yum:
+      name:
+        - freeipa-client
+      state: present
+      update_cache: true
+
+  #Запуск скрипта добавления хоста к серверу
+  - name: add host to ipa-server
+    shell: echo -e "yes\nyes" | ipa-client-install --mkhomedir --domain=OTUS.LAN --server=ipa.otus.lan --no-ntp -p admin -w freeipa02
+```
+### Создаем j2
+```
+[root@ipa ~]#  nano /root/templates/hosts.j2
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+192.168.1.21 ipa.otus.lan ipa
+192.168.1.22 client1.otus.lan client1
+```
+### Запускаем плейбук(ключи я предварительно прокинул с помощью ssh-copy-id )
+```
+[root@ipa ~]#  ansible-playbook provision.yml -i /root/ansible-inventory/inv.inventory -kK -v
+
+
+PLAY RECAP ***************************************************************************************************************************************************************
+server1                    : ok=8    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+```
+### Авторизируемся на сервере и создадим пользователя
+```
+[root@ipa ~]# kinit admin
+[root@ipa ~]# ipa user-add otus-user --first=Otus --last=User --password
+Пароль:
+Введите Пароль ещё раз для проверки:
+---------------------------------
+Добавлен пользователь "otus-user"
+---------------------------------
+  Имя учётной записи пользователя: otus-user
+  Имя: Otus
+  Фамилия: User
+  Полное имя: Otus User
+  Отображаемое имя: Otus User
+  Инициалы: OU
+  Домашний каталог: /home/otus-user
+  GECOS: Otus User
+  Оболочка входа: /bin/sh
+  Имя учётной записи: otus-user@OTUS.LAN
+  Псевдоним учётной записи: otus-user@OTUS.LAN
+  Окончание действия пароля пользователя: 20250803124838Z
+  Адрес электронной почты: otus-user@otus.lan
+  UID: 1713400003
+  ID группы: 1713400003
+  Пароль: True
+  Участник групп: ipausers
+  Доступные ключи Kerberos: True
+```
+### Посмотрим в web
+![4](screen/4.png)
+### Настройки на клиенте
+```
+[root@localhost ~]# hostname
+client1
+[root@localhost ~]# kinit otus-user
+Password for otus-user@OTUS.LAN:
+Password expired.  You must change it now.
+Enter new password:
+Enter it again:
+Password change rejected: Password is too short
+Password not changed..  Please try again.
+Enter new password:
+Enter it again:
+```
