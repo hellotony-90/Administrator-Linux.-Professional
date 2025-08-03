@@ -19,10 +19,10 @@
 <details>
   <summary>Нажмите здесь, чтобы узнать зачем</summary>
   <p> При первой попытке выполнить данную лабу v6 не был выключен и случилось следующее
-      ```
+     
       Could not reliably determine the server's fully qualified domain name, using fe80::a00:27ff:fe62:918e%enp0s3
-     ``` 
-      Apache нет глобальной директивы ServerName и при установке использовался ipv6 адрес, что поломало мне стенд.
+     
+      В Apache нет глобальной директивы ServerName и при установке использовался ipv6 адрес, что поломало мне стенд. Пришлось востанавливать ВМ из снимка
   </p>
 </details>
 
@@ -50,21 +50,30 @@ hostnamectl set-hostname ipa.otus.lan
 ipa.otus.lan
 
 ```
-Выключим Firewall: systemctl stop firewalld
-setenforce 0
-Поменяем в файле /etc/selinux/config, параметр Selinux на disabled
-vi /etc/selinux/config
+### Выключим Firewall:
+```
+[root@ipa ~]# systemctl stop firewalld
+```
+### Выключим Selinux
+```
+[root@ipa ~]# setenforce 0
+```
+### Поменяем в файле /etc/selinux/config, параметр Selinux на disabled
+```
+[root@ipa ~]# nano /etc/selinux/config
 SELINUX=disabled
-  ```
-   
-   vi /etc/hosts
-
+```
+### DNS нет пропишем в hosts запись
+```
+[root@ipa ~]# nano  /etc/hosts
 127.0.0.1   localhost localhost.localdomain 
 127.0.1.1 ipa.otus.lan ipa
 192.168.57.10 ipa.otus.lan ipa
-  ```
-yum install -y ipa-server
-ipa-server-install
+```
+### Установим FreeIPA-сервер
+[root@ipa ~]# yum install -y ipa-server
+### Запустим скрипт установки
+[root@ipa ~]#ipa-server-install
 Далее, нам потребуется указать параметры нашего LDAP-сервера
 Setup complete
 
@@ -83,7 +92,8 @@ Next steps:
         2. You can now obtain a kerberos ticket using the command: 'kinit admin'
            This ticket will allow you to use the IPA tools (e.g., ipa user-add)
            and the web user interface.
-
+### Проверим, что сервер Kerberos может выдать нам билет и потом удалим его
+```
 [root@localhost ~]# kinit admin
 [root@localhost ~]# klist
 Ticket cache: KCM:0
@@ -94,12 +104,13 @@ Valid starting       Expires              Service principal
 [root@localhost ~]# kdestroy
 [root@localhost ~]# klist
 klist: Credentials cache 'KCM:0' not found
-
-
+```
+### Так как я управляю стендом с Win10, пропишу в hosts запись
+```
 c:\Windows\System32\Drivers\etc\hosts
 192.168.1.21 ipa.otus.lan
-
-
+```
+## Проверка 
 картинка 2
 картинка 3
 
