@@ -1,5 +1,7 @@
 Схема лабораторной работы 
-Установка FreeIPA сервера
+# Установка FreeIPA сервера
+## Подготовка ВМ для работы
+### Проверяем сетевые интефрейсы
 ```
 [root@localhost ~]# ip a
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
@@ -13,6 +15,8 @@
     inet 192.168.1.21/24 brd 192.168.1.255 scope global dynamic noprefixroute enp0s3
        valid_lft 5731sec preferred_lft 5731sec
 ```
+### Отключаем ipv6 на интерфейсе enp0s3(при первоначальной установке apache выдал ошибку
+[//]: # Could not reliably determine the server's fully qualified domain name, using fe80::a00:27ff:fe62:918e%enp0s3
 ```
 net.ipv6.conf.all.disable_ipv6 = 1
 ```
