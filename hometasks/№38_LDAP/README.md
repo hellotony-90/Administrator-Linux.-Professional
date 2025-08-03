@@ -15,10 +15,17 @@
     inet 192.168.1.21/24 brd 192.168.1.255 scope global dynamic noprefixroute enp0s3
        valid_lft 5731sec preferred_lft 5731sec
 ```
-### Отключаем ipv6 на интерфейсе enp0s3(при первоначальной установке apache выдал ошибку
-||
-Could not reliably determine the server's fully qualified domain name, using fe80::a00:27ff:fe62:918e%enp0s3
-||
+### Отключаем ipv6 на интерфейсе enp0s3
+<details>
+  <summary>Нажмите здесь, чтобы узнать зачем</summary>
+  <p> При первой попытке выполнить данную лабу v6 не был выключен и случилось следующее
+      ```
+      Could not reliably determine the server's fully qualified domain name, using fe80::a00:27ff:fe62:918e%enp0s3
+     ``` 
+      Apache нет глобальной директивы ServerName и при установке использовался ipv6 адрес, что поломало мне стенд.
+  </p>
+</details>
+
 ```
 net.ipv6.conf.all.disable_ipv6 = 1
 ```
