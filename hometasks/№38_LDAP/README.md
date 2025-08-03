@@ -16,9 +16,9 @@
        valid_lft 5731sec preferred_lft 5731sec
 ```
 ### Отключаем ipv6 на интерфейсе enp0s3(при первоначальной установке apache выдал ошибку
->>>
- Could not reliably determine the server's fully qualified domain name, using fe80::a00:27ff:fe62:918e%enp0s3
-<<<
+||
+Could not reliably determine the server's fully qualified domain name, using fe80::a00:27ff:fe62:918e%enp0s3
+||
 ```
 net.ipv6.conf.all.disable_ipv6 = 1
 ```
